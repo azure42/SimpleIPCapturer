@@ -18,14 +18,35 @@ struct ipValue
     int count;
 };
 
+struct icmp_hdr
+{
+   unsigned char icmp_type;   //类型
+   unsigned char code;        //代码
+   unsigned short chk_sum;    //16位检验和
+};
+
+struct icmp_echo_hdr
+{
+    icmp_hdr base_hdr;
+    unsigned short id;
+    unsigned short seq;
+};
+
+struct icmp_error_hdr
+{
+    icmp_hdr base_hdr;
+    unsigned long unused;
+};
+
 class PcapThread : public QThread
 {
 public:
-    PcapThread(QString devName);
+    PcapThread(QString devName, QString fpCode);
     ~PcapThread();
     int packet_number;
     QMap<QString,struct ipValue> map;
     QString localIP;
+    QString outputStr;
 private:
     void ethernetProtocolPacketCallback(const u_char *packet_content);
     void ipProtocolPacketCallback(const u_char *packet_content);

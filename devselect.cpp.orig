@@ -15,7 +15,8 @@
 //extern QString devName;
 DevSelect::DevSelect(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::devselect) {
+    ui(new Ui::devselect)
+{
     ui->setupUi(this);
 
     pcap_if_t *alldevs;
@@ -35,23 +36,128 @@ DevSelect::DevSelect(QWidget *parent) :
         ui->devList->insertItem(i++,d->name);
     }
     pcap_freealldevs(alldevs);
+    ipFlag=arpFlag=icmpFlag=tcpFlag=udpFlag = false;
+
 
 
 }
 
-DevSelect::~DevSelect() {
+DevSelect::~DevSelect()
+{
     delete ui;
 }
 
-void DevSelect::on_closeButton_clicked() {
-    close();
+
+
+void DevSelect::on_ipButton_clicked()
+{
+    if(ui->ipButton->checkState() == 0)
+        ipFlag = false;
+    else
+        ipFlag = true;
 }
 
-void DevSelect::on_okButton_clicked() {
+void DevSelect::on_ARPButton_clicked()
+{
+    if(ui->ARPButton->checkState() == 0)
+        arpFlag = false;
+    else
+        arpFlag = true;
+}
+
+void DevSelect::on_icmpButton_clicked()
+{
+    if(ui->icmpButton->checkState() == 0)
+        icmpFlag = false;
+    else
+        icmpFlag = true;
+}
+
+void DevSelect::on_tcpBox_clicked()
+{
+    if(ui->tcpBox->checkState() == 0)
+        tcpFlag = false;
+    else
+        tcpFlag = true;
+}
+
+void DevSelect::on_udpBox_clicked()
+{
+    if(ui->udpBox->checkState() == 0)
+        udpFlag = false;
+    else
+        udpFlag = true;
+}
+
+
+void DevSelect::on_buttonBox_accepted()
+{
+    QString boolExp;
+    if(ipFlag || arpFlag || icmpFlag)
+    {
+        QString tmp;
+        //tmp += "(";
+        if(ipFlag)
+            tmp += "ip ";
+        if(arpFlag)
+            tmp += "arp ";
+        if(icmpFlag)
+            tmp += "icmp ";
+        //tmp += ") ";
+        boolExp += tmp;
+    }
+    if(ui->tcpBox->checkState() || ui->udpBox->checkState())
+    {
+        QString tmp;
+        tmp += "and (";
+        if(ui->tcpBox->checkState() )
+            tmp += "tcp ";
+        if(ui->udpBox->checkState())
+            tmp += "udp ";
+         tmp += ") ";
+        boolExp += tmp;
+    }
+    if(!ui->sipLineEdit->text().isEmpty() || !ui->dipLineEdit->text().isEmpty())
+    {
+        QString tmp;
+        tmp += "and (src host ";
+        tmp += ui->sipLineEdit->text();
+        tmp += " and dst host ";
+        tmp += ui->dipLineEdit->text();
+        tmp += ") ";
+        boolExp += tmp;
+    }
+    if(!ui->portEdit->text().isEmpty())
+    {
+        QString tmp;
+        tmp += "and (port ";
+        tmp += ui->portEdit->text();
+        tmp += ") ";
+        boolExp += tmp;
+    }
+    if(!ui->smacLineEdit->text().isEmpty() || !ui->dmacLineEdit->text().isEmpty())
+    {
+        QString tmp;
+        tmp += "and (ether src ";
+        tmp += ui->smacLineEdit->text();
+        tmp += " and ether dst ";
+        tmp += ui->dmacLineEdit->text();
+        tmp += ") ";
+        boolExp += tmp;
+    }
+    qDebug() << boolExp;
+ //////////////////////////////////////////
     qDebug()<<"0";
-    Dialog mainWin(0,ui->devList->currentItem()->text());
+    Dialog mainWin(0,ui->devList->currentItem()->text() , boolExp);
     qDebug()<<"1";
     mainWin.exec();
     qDebug()<<"2";
+    close();
+
+
+}
+
+void DevSelect::on_buttonBox_rejected()
+{
     close();
 }

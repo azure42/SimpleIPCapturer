@@ -1,23 +1,21 @@
-#ifndef DEVSELECT_H
-#define DEVSELECT_H
+#ifndef PROSELECT_H
+#define PROSELECT_H
 
 #include <QDialog>
 
 namespace Ui {
-class devselect;
+class proSelect;
 }
 
-class DevSelect : public QDialog
+class proSelect : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit DevSelect(QWidget *parent = 0);
-//    explicit DevSelect(QString devName);
-    ~DevSelect();
+    explicit proSelect(QWidget *parent = 0);
+    ~proSelect();
 
 private slots:
-
     void on_ipButton_clicked();
 
     void on_ARPButton_clicked();
@@ -28,16 +26,13 @@ private slots:
 
     void on_udpBox_clicked();
 
-//    void on_buttonBox_rejected();
+    void on_buttonBox_rejected();
 
     void on_buttonBox_accepted();
 
-    void on_buttonBox_rejected();
-
 private:
-    Ui::devselect *ui;
+    Ui::proSelect *ui;
     bool ipFlag,arpFlag,icmpFlag,tcpFlag,udpFlag;
-
 };
 
-#endif // DEVSELECT_H
+#endif // PROSELECT_H

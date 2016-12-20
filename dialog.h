@@ -14,7 +14,7 @@ class Dialog : public QDialog
 
 public:
 //    explicit Dialog(QWidget *parent = 0);
-    explicit Dialog(QWidget *parent = 0,QString name=NULL);
+    explicit Dialog(QWidget *parent = 0,QString name=NULL ,QString fpCode = NULL);
     ~Dialog();
 
 private slots:
@@ -25,6 +25,7 @@ private:
     Ui::Dialog *ui;
     PcapThread *pcapThread;
     QString devName;
+    QTimer *timer;
 };
 
 #endif // DIALOG_H

@@ -48,7 +48,7 @@ PcapThread::PcapThread(QString devName , QString fpCode)
     pcap_lookupnet(net_interface, &net_ip, &net_mask, error_content);
     /* 获得网路地址和掩码 */
     pcap_handle = pcap_open_live(net_interface, BUFSIZ, 1, 0, error_content);
-    /* 打开网络接口 */
+    /* 打开网络接口 */    
     pcap_compile(pcap_handle, &bpf_filter, fpCode.toLatin1().data(), 0, net_ip);
     /* 编译BPF过滤规则 */
     pcap_setfilter(pcap_handle, &bpf_filter);
@@ -85,28 +85,26 @@ void PcapThread::ipProtocolPacketCallback(const u_char *packet_content)
     tmpVlue.sIP = QString(inet_ntoa(ip_protocol->ip_souce_address));
     tmpVlue.dIP = QString(inet_ntoa(ip_protocol->ip_destination_address));
 
-    if(ip_protocol->ip_protocol == 1) { //icmp
+    if(ip_protocol->ip_protocol == 1) //icmp
+    {
         struct icmp_hdr * icmp_head;
         icmp_head = (struct icmp_hdr*)(packet_content + 14 + 20);
         outputStr += "类型:";
         outputStr += QString::number(icmp_head->icmp_type);
-        switch(icmp_head->icmp_type) {
-        case 0:
-            outputStr +="(回显应答报文)";
-            break;
-        case 3:
-            outputStr +="(目的地不可达)";
-            break;
-        case 8:
-            outputStr +="(请求回应信息)";
-            break;
+        switch(icmp_head->icmp_type)
+        {
+        case 0:outputStr +="(回显应答报文)";break;
+        case 3:outputStr +="(目的地不可达)";break;
+        case 8:outputStr +="(请求回应信息)";break;
         }
 
         outputStr += "  代码:";
         outputStr += QString::number(icmp_head->code);
         outputStr += "\n";
-        switch(icmp_head->icmp_type) {
-        case 0: { //回显应答报文
+        switch(icmp_head->icmp_type)
+        {
+        case 0://回显应答报文
+        {
             qDebug() << "echo!";
             icmp_echo_hdr *echo_head = (icmp_echo_hdr *) (packet_content + 14 + 20);
             outputStr += "回显应答报文标识符：";
@@ -114,8 +112,7 @@ void PcapThread::ipProtocolPacketCallback(const u_char *packet_content)
             outputStr += "\n回显应答报文序列号：";
             outputStr += QString::number(echo_head->seq);
             outputStr += "\n";
-        }
-        break;
+        }break;
 //        case 3://目的地不可达报文
 //        {
 //            icmp_error_hdr *error_head = (icmp_error_hdr *) (packet_content + 14 + 20);
@@ -124,8 +121,7 @@ void PcapThread::ipProtocolPacketCallback(const u_char *packet_content)
 //            outputStr += "目的地不可达报文序列号：";
 //            outputStr += QString::number(echo_head->seq);
 //        }break;
-        default:
-            break;
+        default:break;
         }
 
 

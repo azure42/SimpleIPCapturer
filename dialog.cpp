@@ -2,14 +2,14 @@
 #include "ui_dialog.h"
 #include <QTimer>
 #include <QDebug>
-Dialog::Dialog(QWidget *parent , QString name) :
+Dialog::Dialog(QWidget *parent , QString name , QString fpCode) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
     qDebug()<<"mainWindow";
     ui->setupUi(this);
     devName = name;
-    pcapThread = new PcapThread(devName);
+    pcapThread = new PcapThread(devName , fpCode);
     QTimer *timer = new QTimer;
     connect(timer,SIGNAL(timeout()),
             this,SLOT(msgUpdate()));
@@ -40,6 +40,7 @@ void Dialog::msgUpdate()
         row++;
     }
     ui->ipLabel->setText("监听设备："+devName+"    设备IP："+pcapThread->localIP+"    捕获包总量："+QString::number(pcapThread->packet_number));
+    ui->textBrowser->setText(pcapThread->outputStr);
     qDebug()<<"UI update";
 
 }
@@ -52,8 +53,11 @@ void Dialog::on_startButton_clicked()
     if(flag) {
         ui->startButton->setText("开始抓包");
         pcapThread->terminate();
+        //timer->stop();
     } else {
         ui->startButton->setText("暂停抓包");
         pcapThread->start();
+        //timer->start();
     }
+
 }
